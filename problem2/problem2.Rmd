@@ -1,0 +1,158 @@
+---
+title: "Problem 2"
+subtitle: "HW3"
+author: "Hanyuan Chi(chixx105), Zhi Shen(shenx704)"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: pdf_document
+---
+
+```{r}
+suppressPackageStartupMessages({
+  library(TSA)
+  library(ggplot2)
+  library(dplyr)
+  library(forecast)
+})
+
+T <- 100L
+```
+
+# Simulate ARIMA processes
+
+## General Requirements
+
+* Please review the resulting PDF and make sure that all code fits into the page. If you have lines of code that run outside of the page limits we will deduct points for incorrect formatting as it makes it unnecessarily hard to grade.
+
+* Please avoid using esoteric R packages. We have already discovered some that generate arima models incorrectly. Stick to the tried and true packages: base R, `forecast`, `TSA`, `zoo`, `xts`.
+
+## Question 1
+
+Please simulate one sample path from AR(1) process $Y_t = 0.8 Y_{t-1} + e_t$ using `arima.sim` of length $T=100$ and plot:
+
+* the sample path
+* ADF test (Hint: use `adf.test` function)
+* ACF (Hint: use `ggAcf` function)
+* PACF (Hint: use `ggPacf` function)
+
+**Attention**: please be extremely careful with the signs of AR component and MA component when you specify them in `arima.sim()`. Wrong sign will lead to a wrong stochastic process.
+
+Please save your sample path into `df1` data.frame `df1$Y` column
+
+Once done please run `Arima()` from the forecast package with the appropriate `order=` parameter to confirm that `Arima` is able to recover the attributes.
+
+```{r}
+set.seed(42) # Please do not change the seed
+T <- 100L
+
+df1 <- data.frame(Y=rep(NA,T))
+
+df1$Y <- arima.sim(model = list(ar = 0.8), n = T)
+
+autoplot(df1$Y) + geom_point(shape=1, size=1)
+adf.test(df1$Y,alternative = "stationary") 
+ggAcf(df1$Y)
+ggPacf(df1$Y)
+
+df1.fit <- Arima(df1$Y, order=c(1,0,0))
+summary(df1.fit)
+
+```
+
+## Question 2
+
+Please simulate one sample path from MA(1) process $Y_t = e_t - 0.9 e_{t-1}$ using `arima.sim` of length $T=100$ and plot:
+
+* the sample path
+* ADF test (Hint: use `adf.test` function)
+* ACF (Hint: use `ggAcf` function)
+* PACF (Hint: use `ggPacf` function)
+
+**Attention**: please be extremely careful with the signs of AR component and MA component when you specify them in `arima.sim()`. Wrong sign will lead to a wrong stochastic process.
+
+Please save your sample path into `df2` data.frame `df2$Y` column
+
+Once done please run `Arima()` from the forecast package with the appropriate `order=` parameter to confirm that `Arima` is able to recover the attributes.
+
+```{r}
+set.seed(42) # Please do not change the seed
+T <- 100L
+
+df2 <- data.frame(Y=rep(NA,T))
+
+df2$Y <- arima.sim(model = list(ma = -0.9), n = T)
+
+autoplot(df2$Y) + geom_point(shape=1, size=1)
+adf.test(df2$Y,alternative = "stationary")
+ggAcf(df2$Y)
+ggPacf(df2$Y)
+
+df2.fit <- Arima(df2$Y, order=c(0,0,1))
+summary(df2.fit)
+
+```
+
+## Question 3
+
+Please simulate one sample path from ARMA(1,1) process $Y_t = 0.8 Y_{t-1} + e_t - 0.9 e_{t-1}$ using `arima.sim` of length $T=1000$ and plot:
+
+* the sample path
+* ADF test (Hint: use `adf.test` function)
+* ACF (Hint: use `ggAcf` function)
+* PACF (Hint: use `ggPacf` function)
+
+**Attention**: please be extremely careful with the signs of AR component and MA component when you specify them in `arima.sim()`. Wrong sign will lead to a wrong stochastic process.
+
+Please save your sample path into `df3` data.frame `df3$Y` column
+
+Once done please run `Arima()` from the forecast package with the appropriate `order=` parameter to confirm that `Arima` is able to recover the attributes.
+
+```{r}
+set.seed(42) # Please do not change the seed
+T <- 1000L
+
+df3 <- data.frame(Y=rep(NA,T))
+
+df3$Y <- arima.sim(model = list(ar = 0.8,
+                                ma = -0.9), n = T)
+
+autoplot(df3$Y) + geom_point(shape=1, size=1)
+adf.test(df3$Y,alternative = "stationary")
+ggAcf(df3$Y)
+ggPacf(df3$Y)
+
+df3.fit <- Arima(df3$Y, order=c(1,0,1))
+summary(df3.fit)
+```
+
+
+## Question 4
+
+Please simulate one sample path from ARIMA(0,1,1) process $Y_t = Y_{t-1} + e_t + 0.9 e_{t-1}$ using `arima.sim` of length $T=1000$ and plot:
+
+* the sample path
+* ADF test (Hint: use `adf.test` function)
+* ACF (Hint: use `ggAcf` function)
+* PACF (Hint: use `ggPacf` function)
+
+**Attention**: please be extremely careful with the signs of AR component and MA component when you specify them in `arima.sim()`. Wrong sign will lead to a wrong stochastic process.
+
+Please save your sample path into `df4` data.frame `df4$Y` column.
+
+Once done please run `Arima()` from the forecast package with the appropriate `order=` parameter to confirm that `Arima` is able to recover the attributes.
+
+```{r}
+set.seed(42) # Please do not change the seed
+T <- 1000L
+
+Y <- arima.sim(n=T,model=list(ma=0.9,order=c(0,1,1)))
+
+df4 <- data.frame(Y)
+
+autoplot(df4$Y) + geom_point(shape=1, size=1)
+adf.test(df4$Y,alternative = "stationary")
+ggAcf(df4$Y)
+ggPacf(df4$Y)
+
+df4.fit <- Arima(df4$Y, order=c(0,1,1))
+summary(df4.fit)
+```
